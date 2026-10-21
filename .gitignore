@@ -1,0 +1,31 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# local env files
+.env*.local
+.env
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# vercel
+.vercel
+
+# large local fallback wasm binaries (loaded from unpkg CDN in production)
+/public/ffmpeg/ffmpeg-core.wasm
+/public/ffmpeg-mt/ffmpeg-core.wasm
