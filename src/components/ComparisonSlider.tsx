@@ -91,7 +91,7 @@ export default function ComparisonSlider({
       const zipUrl = URL.createObjectURL(zipBlob);
       const a = document.createElement('a');
       a.href = zipUrl;
-      a.download = `clipshrink-batch-${Date.now()}.zip`;
+      a.download = `bitvidforge-batch-${Date.now()}.zip`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -104,13 +104,13 @@ export default function ComparisonSlider({
   return (
     <div
       data-testid="comparison-view"
-      className="rounded-3xl border border-emerald-500/30 bg-[#11151f] p-6 sm:p-8 shadow-2xl space-y-6"
+      className="rounded-3xl border border-amber-500/30 bg-[#141210] p-6 sm:p-8 shadow-2xl space-y-6"
     >
       {/* Multi-File Batch Selector Tabs (if batch > 1) */}
       {completedBatchItems.length > 1 && onSelectBatchItem && (
-        <div className="rounded-2xl bg-[#090b10] border border-slate-800 p-3.5 space-y-2.5">
+        <div className="rounded-2xl bg-[#0c0a09] border border-stone-800 p-3.5 space-y-2.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="inline-flex items-center gap-1.5 font-semibold text-indigo-300">
+            <span className="inline-flex items-center gap-1.5 font-semibold text-amber-300">
               <Layers className="w-3.5 h-3.5" />
               Batch Completed ({completedBatchItems.length} videos) — Select file to compare:
             </span>
@@ -125,8 +125,8 @@ export default function ComparisonSlider({
                   onClick={() => onSelectBatchItem(item.id)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-medium shrink-0 border transition ${
                     active
-                      ? 'bg-indigo-600 text-white border-indigo-400'
-                      : 'bg-slate-900 text-slate-300 border-slate-800 hover:border-slate-700'
+                      ? 'bg-amber-500 text-stone-950 font-semibold border-amber-400'
+                      : 'bg-stone-900 text-stone-300 border-stone-800 hover:border-stone-700'
                   }`}
                 >
                   #{idx + 1} {item.file.name}
@@ -138,7 +138,7 @@ export default function ComparisonSlider({
       )}
 
       {/* Top Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-stone-800">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-semibold">
             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -147,7 +147,7 @@ export default function ComparisonSlider({
           <h2 className="text-xl sm:text-2xl font-bold text-white pt-1">
             {originalMB}MB &rarr; {compressedMB}MB ({savedPct}% saved)
           </h2>
-          <p className="text-xs text-slate-400 font-mono">
+          <p className="text-xs text-stone-400 font-mono">
             {originalMB}MB -&gt; {compressedMB}MB ({savedPct}% saved) • Local Memory Cleaned
           </p>
         </div>
@@ -155,25 +155,25 @@ export default function ComparisonSlider({
 
       {/* Side-by-Side Size Comparison Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-center">
-        <div className="rounded-2xl bg-[#090b10] border border-slate-800 p-4">
-          <span className="text-xs font-mono uppercase tracking-wider text-slate-400 block">
+        <div className="rounded-2xl bg-[#0c0a09] border border-stone-800 p-4">
+          <span className="text-xs font-mono uppercase tracking-wider text-stone-400 block">
             Original Size
           </span>
-          <div className="text-2xl font-extrabold text-slate-200 font-mono mt-1">
+          <div className="text-2xl font-extrabold text-stone-200 font-mono mt-1">
             {originalMB} MB
           </div>
-          <span className="text-[11px] text-slate-500 truncate block mt-1">
+          <span className="text-[11px] text-stone-500 truncate block mt-1">
             {originalFile.name}
           </span>
         </div>
 
         <div className="flex flex-col items-center justify-center py-2">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono text-sm font-bold">
-            <Sparkles className="w-4 h-4 text-emerald-400" />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono text-sm font-bold">
+            <Sparkles className="w-4 h-4 text-amber-400" />
             <span>{savedPct}% Saved</span>
             <ArrowRight className="w-4 h-4" />
           </div>
-          <span className="text-[11px] text-slate-500 mt-1.5 font-mono">
+          <span className="text-[11px] text-stone-500 mt-1.5 font-mono">
             Output Container: {formatUpper}
           </span>
         </div>
@@ -193,10 +193,10 @@ export default function ComparisonSlider({
 
       {/* Side-by-Side Video Players */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="rounded-2xl overflow-hidden bg-black border border-slate-800">
-          <div className="px-3.5 py-2.5 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between text-xs font-mono">
-            <span className="text-slate-300 font-semibold">Original Video</span>
-            <span className="text-slate-400">{originalMB} MB</span>
+        <div className="rounded-2xl overflow-hidden bg-black border border-stone-800">
+          <div className="px-3.5 py-2.5 bg-stone-900/90 border-b border-stone-800 flex items-center justify-between text-xs font-mono">
+            <span className="text-stone-300 font-semibold">Original Video</span>
+            <span className="text-stone-400">{originalMB} MB</span>
           </div>
           {originalUrl && (
             <video
@@ -208,12 +208,33 @@ export default function ComparisonSlider({
             />
           )}
         </div>
-        <div className="rounded-2xl overflow-hidden bg-black border border-emerald-500/30">
+        <div className="rounded-2xl overflow-hidden bg-black border border-emerald-500/30 flex flex-col">
           <div className="px-3.5 py-2.5 bg-emerald-950/30 border-b border-emerald-500/20 flex items-center justify-between text-xs font-mono">
-            <span className="text-emerald-300 font-semibold">Compressed Video</span>
+            <span className="text-emerald-300 font-semibold">
+              {normalizedExt === '.gif'
+                ? 'Generated Animated GIF'
+                : normalizedExt === '.mp3'
+                ? 'Extracted MP3 Audio'
+                : 'Compressed Video'}
+            </span>
             <span className="text-emerald-400">{compressedMB} MB</span>
           </div>
-          {compressedUrl && (
+          {compressedUrl && normalizedExt === '.gif' && (
+            <img
+              src={compressedUrl}
+              alt="Compressed animated GIF preview"
+              className="w-full aspect-video object-contain"
+            />
+          )}
+          {compressedUrl && normalizedExt === '.mp3' && (
+            <div className="w-full aspect-video flex flex-col items-center justify-center p-6 gap-4 bg-[#0c0a09]">
+              <span className="text-xs font-mono text-amber-300">
+                192 kbps Stereo MP3 Audio Stream Ready
+              </span>
+              <audio src={compressedUrl} controls className="w-full max-w-sm" />
+            </div>
+          )}
+          {compressedUrl && normalizedExt !== '.gif' && normalizedExt !== '.mp3' && (
             <video
               src={compressedUrl}
               controls
@@ -230,7 +251,7 @@ export default function ComparisonSlider({
         <button
           type="button"
           onClick={handleDownload}
-          className="flex-1 inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-bold text-base shadow-lg shadow-emerald-500/20 transition"
+          className="flex-1 inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-stone-950 font-bold text-base shadow-lg shadow-amber-500/20 transition"
         >
           <Download className="w-5 h-5" />
           Download Compressed {formatUpper}
@@ -241,7 +262,7 @@ export default function ComparisonSlider({
             type="button"
             onClick={handleDownloadAllZip}
             disabled={isZipping}
-            className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm shadow-lg shadow-indigo-600/20 transition"
+            className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/20 transition"
           >
             {isZipping ? (
               <>
@@ -260,14 +281,14 @@ export default function ComparisonSlider({
         <button
           type="button"
           onClick={onReset}
-          className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-sm border border-slate-700 transition"
+          className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-2xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold text-sm border border-stone-700 transition"
         >
           <RotateCcw className="w-4 h-4" />
           Compress Another File
         </button>
       </div>
 
-      <div className="flex items-center justify-center gap-2 text-xs text-slate-500 pt-1">
+      <div className="flex items-center justify-center gap-2 text-xs text-stone-500 pt-1">
         <ShieldCheck className="w-4 h-4 text-emerald-400" />
         <span>
           Generated locally on your device — zero bytes sent to any server.

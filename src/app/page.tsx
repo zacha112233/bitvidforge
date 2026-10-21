@@ -48,8 +48,10 @@ export default function HomePage() {
   const [batchTotalToProcess, setBatchTotalToProcess] = useState<number>(1);
   const [activeProcessingName, setActiveProcessingName] = useState<string>('video.mp4');
 
-  const [selectedPreset, setSelectedPreset] = useState<PresetId>('web');
+  const [selectedPreset, setSelectedPreset] = useState<PresetId>('discord');
   const [customSizeMB, setCustomSizeMB] = useState<number>(15);
+  const [trimStart, setTrimStart] = useState<number>(0);
+  const [trimEnd, setTrimEnd] = useState<number>(10);
   const [resolution, setResolution] = useState<ResolutionOption>('original');
   const [fps, setFps] = useState<FramerateOption>('original');
   const [formatCodec, setFormatCodec] = useState<OutputFormatOption>('mp4-h264');
@@ -99,6 +101,15 @@ export default function HomePage() {
 
   const primaryQueueItem = queue[0] || null;
 
+  useEffect(() => {
+    setTrimStart(0);
+    setTrimEnd(
+      primaryQueueItem?.duration && primaryQueueItem.duration > 0
+        ? Number(primaryQueueItem.duration.toFixed(1))
+        : 10
+    );
+  }, [primaryQueueItem?.id, primaryQueueItem?.duration]);
+
   const originalSizeMB = useMemo(() => {
     if (!primaryQueueItem) return null;
     return Number((primaryQueueItem.file.size / (1024 * 1024)).toFixed(2));
@@ -108,7 +119,11 @@ export default function HomePage() {
     (fileSizeBytes?: number): number => {
       switch (selectedPreset) {
         case 'discord':
-          return 24;
+          return 9.5;
+        case 'whatsapp':
+          return 15.5;
+        case 'nitro':
+          return 48;
         case 'email':
           return 9.5;
         case 'web': {
@@ -204,6 +219,8 @@ export default function HomePage() {
           muteAudio,
           multiThreading,
           durationSeconds: currentItem.duration,
+          trimStart: i === 0 ? trimStart : 0,
+          trimEnd: i === 0 ? trimEnd : currentItem.duration,
         });
 
         lastCompletedId = currentItem.id;
@@ -262,26 +279,26 @@ export default function HomePage() {
 
   return (
     <WasmErrorBoundary>
-      <div className="min-h-screen flex flex-col bg-[#090b10] text-slate-100 relative overflow-x-hidden">
-        {/* Ambient background glow */}
+      <div className="min-h-screen flex flex-col bg-[#0c0a09] text-stone-100 relative overflow-x-hidden">
+        {/* Ambient background glow + subtle studio grid */}
         <div
           aria-hidden="true"
-          className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-[900px] h-[420px] bg-indigo-600/10 blur-[140px] rounded-full"
+          className="pointer-events-none fixed top-0 left-1/2 -translate-x-1/2 w-[920px] h-[440px] bg-gradient-to-b from-amber-500/15 via-orange-600/5 to-transparent blur-[130px] rounded-full"
         />
 
         {/* Top Navigation & Trust Bar */}
-        <header className="relative z-10 border-b border-slate-800/80 bg-[#090b10]/85 backdrop-blur-md">
+        <header className="relative z-10 border-b border-stone-800/80 bg-[#0c0a09]/85 backdrop-blur-md">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-md shadow-indigo-500/20">
-                <Film className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400 to-orange-600 flex items-center justify-center shadow-md shadow-amber-500/25">
+                <Film className="w-5 h-5 text-stone-950" />
               </div>
               <div>
                 <span className="font-bold text-base tracking-tight text-white">
-                  ClipShrink
+                  BitVidForge
                 </span>
-                <span className="ml-2 text-[11px] font-mono px-2 py-0.5 rounded bg-slate-800 text-indigo-300 border border-slate-700">
-                  Instant &amp; Private
+                <span className="ml-2 text-[11px] font-mono px-2 py-0.5 rounded bg-stone-900 text-amber-300 border border-amber-500/30">
+                  Local Media Studio
                 </span>
               </div>
             </div>
@@ -295,12 +312,12 @@ export default function HomePage() {
                 <Lock className="w-3 h-3 text-emerald-400" />
                 <span>POST/PUT Egress: {outboundPostPutCount}</span>
               </div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-xs font-medium text-slate-300">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-900/90 border border-stone-800 text-xs font-medium text-stone-300">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500" />
                 </span>
-                <Cpu className="w-3.5 h-3.5 text-emerald-400" />
+                <Cpu className="w-3.5 h-3.5 text-amber-400" />
                 <span>Local Compute Active</span>
               </div>
             </div>
@@ -312,17 +329,20 @@ export default function HomePage() {
           {/* Trust Hero Section */}
           <section className="text-center space-y-4">
             {/* Prominent Trust Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs sm:text-sm font-semibold shadow-sm">
-              <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs sm:text-sm font-semibold shadow-sm">
+              <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
               <span>100% In-Browser &amp; Private — Files never leave your device.</span>
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-              Shrink Any Video in Seconds
+              Forge Smaller Videos,{' '}
+              <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-orange-500 bg-clip-text text-transparent">
+                GIFs &amp; Audio
+              </span>
             </h1>
-            <p className="max-w-2xl mx-auto text-sm sm:text-base text-slate-400 leading-relaxed">
-              Make large clips fit Discord, Slack, or Email effortlessly. Fast, private, and
-              processed right on your device with zero uploads or waiting rooms.
+            <p className="max-w-2xl mx-auto text-sm sm:text-base text-stone-400 leading-relaxed">
+              Fit Discord&apos;s 10MB cap, WhatsApp, or Slack with precision bitrate targeting,
+              instant dead-air trimming, and 1-click GIF or MP3 extraction — 100% locally.
             </p>
           </section>
 
@@ -350,13 +370,16 @@ export default function HomePage() {
                 disabled={isProcessing || isLoading}
               />
 
-              {/* Step 2: Intent-Based Presets & Advanced Settings */}
+              {/* Step 2: Intent-Based Presets, Quick Trimmer & Advanced Settings */}
               <PresetSelector
                 selectedPreset={selectedPreset}
                 targetSizeMB={targetSizeMB}
                 customSizeMB={customSizeMB}
                 originalSizeMB={originalSizeMB}
                 videoDuration={primaryQueueItem?.duration || null}
+                primaryFile={primaryQueueItem?.file || null}
+                trimStart={trimStart}
+                trimEnd={trimEnd}
                 resolution={resolution}
                 fps={fps}
                 formatCodec={formatCodec}
@@ -364,6 +387,10 @@ export default function HomePage() {
                 multiThreading={multiThreading}
                 onSelectPreset={setSelectedPreset}
                 onCustomSizeChange={setCustomSizeMB}
+                onTrimChange={(start, end) => {
+                  setTrimStart(start);
+                  setTrimEnd(end);
+                }}
                 onResolutionChange={setResolution}
                 onFpsChange={setFps}
                 onFormatCodecChange={setFormatCodec}
@@ -396,21 +423,30 @@ export default function HomePage() {
                   onClick={handleStartCompression}
                   className={`w-full py-4 px-6 rounded-2xl font-bold text-base sm:text-lg flex items-center justify-center gap-3 transition-all shadow-xl ${
                     queue.length > 0 && !isProcessing && !isLoading
-                      ? 'bg-gradient-to-r from-indigo-600 via-violet-600 to-indigo-600 hover:from-indigo-500 hover:via-violet-500 hover:to-indigo-500 text-white shadow-indigo-600/25 cursor-pointer'
-                      : 'bg-slate-800/80 text-slate-500 border border-slate-800 cursor-not-allowed'
+                      ? 'bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-400 hover:via-orange-400 hover:to-amber-400 text-stone-950 shadow-amber-500/25 cursor-pointer'
+                      : 'bg-stone-900/80 text-stone-500 border border-stone-800 cursor-not-allowed'
                   }`}
                 >
                   <Sparkles className="w-5 h-5" />
                   {queue.length === 0 ? (
                     <span>Select a Video or Load Demo Clip to Begin</span>
+                  ) : formatCodec === 'gif' ? (
+                    <span>
+                      Forge High-FPS Animated GIF
+                      {queue.length > 1 ? ` (${queue.length} Clips)` : ''}
+                    </span>
+                  ) : formatCodec === 'mp3-audio' ? (
+                    <span>
+                      Extract 192 kbps MP3 Audio
+                      {queue.length > 1 ? ` (${queue.length} Clips)` : ''}
+                    </span>
                   ) : queue.length === 1 ? (
                     <span>
-                      Compress Video to ~{targetSizeMB} MB (
-                      {getFormatMetadata(formatCodec).label})
+                      Forge Video to ~{targetSizeMB} MB ({getFormatMetadata(formatCodec).label})
                     </span>
                   ) : (
                     <span>
-                      Compress Batch Queue (
+                      Forge Batch Queue (
                       {pendingOrRetryableCount > 0 ? pendingOrRetryableCount : queue.length}{' '}
                       Videos • {getFormatMetadata(formatCodec).label})
                     </span>
@@ -422,29 +458,29 @@ export default function HomePage() {
 
           {/* Architectural Privacy & Performance Footer Cards */}
           <section className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
-            <div className="rounded-2xl border border-slate-800/80 bg-[#11151f]/60 p-4 flex items-start gap-3">
+            <div className="rounded-2xl border border-stone-800/80 bg-[#141210]/80 p-4 flex items-start gap-3">
               <Lock className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-xs font-semibold text-white">Zero Server Egress</h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-stone-400 mt-1">
                   No POST or PUT requests ever leave your browser. All media stays in local RAM.
                 </p>
               </div>
             </div>
-            <div className="rounded-2xl border border-slate-800/80 bg-[#11151f]/60 p-4 flex items-start gap-3">
-              <Zap className="w-5 h-5 text-indigo-400 shrink-0 mt-0.5" />
+            <div className="rounded-2xl border border-stone-800/80 bg-[#141210]/80 p-4 flex items-start gap-3">
+              <Zap className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-xs font-semibold text-white">Multi-Threaded Engine</h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-stone-400 mt-1">
                   Harnesses @ffmpeg/core-mt pthreads &amp; SIMD with deterministic bitrate targeting.
                 </p>
               </div>
             </div>
-            <div className="rounded-2xl border border-slate-800/80 bg-[#11151f]/60 p-4 flex items-start gap-3">
-              <HardDrive className="w-5 h-5 text-cyan-400 shrink-0 mt-0.5" />
+            <div className="rounded-2xl border border-stone-800/80 bg-[#141210]/80 p-4 flex items-start gap-3">
+              <HardDrive className="w-5 h-5 text-orange-400 shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-xs font-semibold text-white">Auto MEMFS Cleanup</h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-stone-400 mt-1">
                   Automatically unlinks virtual input &amp; output buffers after each transcode.
                 </p>
               </div>
@@ -473,12 +509,12 @@ export default function HomePage() {
         />
 
         {/* Footer */}
-        <footer className="relative z-10 border-t border-slate-800/70 py-5 text-center text-xs text-slate-500">
+        <footer className="relative z-10 border-t border-stone-800/70 py-5 text-center text-xs text-stone-500">
           <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
             <span>
               Powered by Next.js App Router, Tailwind CSS &amp; @ffmpeg/ffmpeg (v0.12 WebAssembly)
             </span>
-            <span className="font-mono text-[11px] text-slate-400">
+            <span className="font-mono text-[11px] text-stone-400">
               COOP: same-origin • COEP: require-corp • WASM Engine:{' '}
               {isLoaded
                 ? isMultiThreaded

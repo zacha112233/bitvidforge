@@ -6,7 +6,12 @@ import { fetchFile, toBlobURL } from '@ffmpeg/util';
 
 export type ResolutionOption = 'original' | '1080p' | '720p' | '480p';
 export type FramerateOption = 'original' | 30 | 60;
-export type OutputFormatOption = 'mp4-h264' | 'webm-vp9' | 'mp4-mpeg4';
+export type OutputFormatOption =
+  | 'mp4-h264'
+  | 'webm-vp9'
+  | 'mp4-mpeg4'
+  | 'gif'
+  | 'mp3-audio';
 
 export interface AdvancedCompressOptions {
   resolution?: ResolutionOption;
@@ -15,6 +20,8 @@ export interface AdvancedCompressOptions {
   muteAudio?: boolean;
   multiThreading?: boolean;
   durationSeconds?: number;
+  trimStart?: number;
+  trimEnd?: number;
 }
 
 export type ProcessingStage =
@@ -58,6 +65,20 @@ export function getFormatMetadata(formatCodec: OutputFormatOption = 'mp4-h264'):
         mimeType: 'video/mp4',
         label: 'MP4 (MPEG-4 Fast)',
         codecLabel: 'MPEG-4 + AAC',
+      };
+    case 'gif':
+      return {
+        ext: '.gif',
+        mimeType: 'image/gif',
+        label: 'Animated GIF',
+        codecLabel: '256-Color Palette GIF',
+      };
+    case 'mp3-audio':
+      return {
+        ext: '.mp3',
+        mimeType: 'audio/mpeg',
+        label: 'MP3 Audio Only',
+        codecLabel: 'MP3 Stereo Audio',
       };
     case 'mp4-h264':
     default:
@@ -362,18 +383,38 @@ export function useFFmpeg() {
           `[FS] Reading local file "${file.name}" (${(file.size / (1024 * 1024)).toFixed(2)} MB)...`
         );
 
-        const durationSeconds =
+        const rawDurationSeconds =
           options?.durationSeconds && options.durationSeconds > 0
             ? options.durationSeconds
             : await getVideoDuration(file);
 
+        const trimStartSec =
+          typeof options?.trimStart === 'number' && options.trimStart > 0
+            ? Math.min(options.trimStart, Math.max(0, rawDurationSeconds - 0.5))
+            : 0;
+        const trimEndSec =
+          typeof options?.trimEnd === 'number' &&
+          options.trimEnd > trimStartSec &&
+          options.trimEnd < rawDurationSeconds
+            ? options.trimEnd
+            : rawDurationSeconds;
+        const isTrimmed =
+          trimStartSec > 0.05 || trimEndSec < rawDurationSeconds - 0.05;
+        const durationSeconds = Math.max(0.5, trimEndSec - trimStartSec);
+
         // Formula: Target Bitrate (kbps) = (Target Size in Kilobits / Video Duration in Seconds) - Audio Bitrate (128 kbps)
-        const audioBitrateKbps = muteAudio ? 0 : DEFAULT_AUDIO_BITRATE_KBPS;
+        const audioBitrateKbps =
+          muteAudio || formatCodec === 'gif'
+            ? 0
+            : formatCodec === 'mp3-audio'
+            ? 192
+            : DEFAULT_AUDIO_BITRATE_KBPS;
         const targetSizeKilobits = targetSizeMB * 1024 * 8;
         const rawVideoBitrateKbps = Math.floor(
           targetSizeKilobits / durationSeconds - audioBitrateKbps
         );
-        const videoBitrateKbps = Math.max(100, rawVideoBitrateKbps);
+        const videoBitrateKbps =
+          formatCodec === 'mp3-audio' ? 0 : Math.max(100, rawVideoBitrateKbps);
         const maxrateKbps = Math.floor(videoBitrateKbps * 1.15);
         const bufsizeKbps = Math.floor(videoBitrateKbps * 2);
 
@@ -395,12 +436,19 @@ export function useFFmpeg() {
           formatCodec,
         });
 
+        if (isTrimmed) {
+          appendLog(
+            `[Trim] Cutting clip from ${trimStartSec.toFixed(1)}s to ${trimEndSec.toFixed(1)}s (Active duration: ${durationSeconds.toFixed(2)}s)`
+          );
+        }
         appendLog(
           `[Bitrate] Duration: ${durationSeconds.toFixed(2)}s | Target: ${targetSizeMB.toFixed(2)} MB (${Math.round(targetSizeKilobits)} kb)`
         );
-        appendLog(
-          `[Bitrate] Formula: (${Math.round(targetSizeKilobits)} kb / ${durationSeconds.toFixed(2)}s) - ${audioBitrateKbps} kbps = ${videoBitrateKbps} kbps video`
-        );
+        if (formatCodec !== 'mp3-audio' && formatCodec !== 'gif') {
+          appendLog(
+            `[Bitrate] Formula: (${Math.round(targetSizeKilobits)} kb / ${durationSeconds.toFixed(2)}s) - ${audioBitrateKbps} kbps = ${videoBitrateKbps} kbps video`
+          );
+        }
         appendLog(
           `[Engine] Mode: ${mtActive ? `Multi-Threaded (${threadCount} threads)` : 'Single-Threaded'} | Output: ${formatMeta.label}`
         );
@@ -414,99 +462,139 @@ export function useFFmpeg() {
         setStage('encoding');
         appendLog(`[Transcode] Encoding ${formatMeta.codecLabel} via WebAssembly...`);
 
-        const ffmpegArgs: string[] = ['-i', inputFileName];
+        const ffmpegArgs: string[] = [];
+
+        if (trimStartSec > 0.05) {
+          ffmpegArgs.push('-ss', trimStartSec.toFixed(2));
+        }
+        if (trimEndSec < rawDurationSeconds - 0.05) {
+          ffmpegArgs.push('-to', trimEndSec.toFixed(2));
+        }
+
+        ffmpegArgs.push('-i', inputFileName);
 
         if (mtActive && threadCount > 1) {
           ffmpegArgs.push('-threads', String(threadCount));
         }
 
-        // Resolution downscale filter
-        if (options?.resolution && options.resolution !== 'original') {
+        if (formatCodec === 'gif') {
+          const gifFps =
+            options?.fps && options.fps !== 'original'
+              ? Math.min(20, Number(options.fps))
+              : 12;
           const heightMap: Record<Exclude<ResolutionOption, 'original'>, number> = {
-            '1080p': 1080,
-            '720p': 720,
-            '480p': 480,
+            '1080p': 720,
+            '720p': 480,
+            '480p': 360,
           };
-          const targetHeight = heightMap[options.resolution];
-          ffmpegArgs.push('-vf', `scale=-2:${targetHeight}`);
+          const gifHeight =
+            options?.resolution && options.resolution !== 'original'
+              ? heightMap[options.resolution]
+              : 420;
+          const gifFilter = `fps=${gifFps},scale=-2:${gifHeight}:flags=lanczos,split[s0][s1];[s0]palettegen=max_colors=192:stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=4`;
+          ffmpegArgs.push('-vf', gifFilter, '-loop', '0', outputFileName);
           appendLog(
-            `[Filter] Downscaling resolution to ${options.resolution} (scale=-2:${targetHeight})`
+            `[GIF] Generating 192-color adaptive palette GIF (${gifHeight}p @ ${gifFps}fps)`
           );
-        }
-
-        // Framerate cap
-        if (options?.fps && options.fps !== 'original') {
-          ffmpegArgs.push('-r', String(options.fps));
-          appendLog(`[Filter] Limiting framerate to ${options.fps} fps`);
-        }
-
-        // Codec-specific encoding flags
-        if (formatCodec === 'webm-vp9') {
+        } else if (formatCodec === 'mp3-audio') {
           ffmpegArgs.push(
-            '-c:v',
-            'libvpx-vp9',
-            '-b:v',
-            `${videoBitrateKbps}k`,
-            '-maxrate',
-            `${maxrateKbps}k`,
-            '-bufsize',
-            `${bufsizeKbps}k`,
-            '-deadline',
-            'realtime',
-            '-cpu-used',
-            '8',
-            '-row-mt',
-            '1',
-            '-pix_fmt',
-            'yuv420p'
+            '-vn',
+            '-c:a',
+            'libmp3lame',
+            '-b:a',
+            '192k',
+            outputFileName
           );
-          if (muteAudio) {
-            ffmpegArgs.push('-an');
-          } else {
-            ffmpegArgs.push('-c:a', 'libopus', '-b:a', `${audioBitrateKbps}k`);
-          }
-          ffmpegArgs.push(outputFileName);
-        } else if (formatCodec === 'mp4-mpeg4') {
-          ffmpegArgs.push(
-            '-c:v',
-            'mpeg4',
-            '-b:v',
-            `${videoBitrateKbps}k`,
-            '-maxrate',
-            `${maxrateKbps}k`,
-            '-bufsize',
-            `${bufsizeKbps}k`,
-            '-pix_fmt',
-            'yuv420p'
-          );
-          if (muteAudio) {
-            ffmpegArgs.push('-an');
-          } else {
-            ffmpegArgs.push('-c:a', 'aac', '-b:a', `${audioBitrateKbps}k`);
-          }
-          ffmpegArgs.push('-movflags', '+faststart', outputFileName);
+          appendLog('[Audio] Extracting high-bitrate 192 kbps MP3 audio stream (-vn)');
         } else {
-          // Default: mp4-h264
-          ffmpegArgs.push(
-            '-c:v',
-            'libx264',
-            '-preset',
-            'ultrafast',
-            '-b:v',
-            `${videoBitrateKbps}k`,
-            '-maxrate',
-            `${maxrateKbps}k`,
-            '-bufsize',
-            `${bufsizeKbps}k`,
-            '-pix_fmt',
-            'yuv420p'
-          );
-          if (muteAudio) {
-            ffmpegArgs.push('-an');
-          } else {
-            ffmpegArgs.push('-c:a', 'aac', '-b:a', `${audioBitrateKbps}k`);
+          // Resolution downscale filter for video formats
+          if (options?.resolution && options.resolution !== 'original') {
+            const heightMap: Record<Exclude<ResolutionOption, 'original'>, number> = {
+              '1080p': 1080,
+              '720p': 720,
+              '480p': 480,
+            };
+            const targetHeight = heightMap[options.resolution];
+            ffmpegArgs.push('-vf', `scale=-2:${targetHeight}`);
+            appendLog(
+              `[Filter] Downscaling resolution to ${options.resolution} (scale=-2:${targetHeight})`
+            );
           }
-          ffmpegArgs.push('-movflags', '+faststart', outputFileName);
+
+          // Framerate cap
+          if (options?.fps && options.fps !== 'original') {
+            ffmpegArgs.push('-r', String(options.fps));
+            appendLog(`[Filter] Limiting framerate to ${options.fps} fps`);
+          }
+
+          // Codec-specific encoding flags
+          if (formatCodec === 'webm-vp9') {
+            ffmpegArgs.push(
+              '-c:v',
+              'libvpx-vp9',
+              '-b:v',
+              `${videoBitrateKbps}k`,
+              '-maxrate',
+              `${maxrateKbps}k`,
+              '-bufsize',
+              `${bufsizeKbps}k`,
+              '-deadline',
+              'realtime',
+              '-cpu-used',
+              '8',
+              '-row-mt',
+              '1',
+              '-pix_fmt',
+              'yuv420p'
+            );
+            if (muteAudio) {
+              ffmpegArgs.push('-an');
+            } else {
+              ffmpegArgs.push('-c:a', 'libopus', '-b:a', `${audioBitrateKbps}k`);
+            }
+            ffmpegArgs.push(outputFileName);
+          } else if (formatCodec === 'mp4-mpeg4') {
+            ffmpegArgs.push(
+              '-c:v',
+              'mpeg4',
+              '-b:v',
+              `${videoBitrateKbps}k`,
+              '-maxrate',
+              `${maxrateKbps}k`,
+              '-bufsize',
+              `${bufsizeKbps}k`,
+              '-pix_fmt',
+              'yuv420p'
+            );
+            if (muteAudio) {
+              ffmpegArgs.push('-an');
+            } else {
+              ffmpegArgs.push('-c:a', 'aac', '-b:a', `${audioBitrateKbps}k`);
+            }
+            ffmpegArgs.push('-movflags', '+faststart', outputFileName);
+          } else {
+            // Default: mp4-h264
+            ffmpegArgs.push(
+              '-c:v',
+              'libx264',
+              '-preset',
+              'ultrafast',
+              '-b:v',
+              `${videoBitrateKbps}k`,
+              '-maxrate',
+              `${maxrateKbps}k`,
+              '-bufsize',
+              `${bufsizeKbps}k`,
+              '-pix_fmt',
+              'yuv420p'
+            );
+            if (muteAudio) {
+              ffmpegArgs.push('-an');
+            } else {
+              ffmpegArgs.push('-c:a', 'aac', '-b:a', `${audioBitrateKbps}k`);
+            }
+            ffmpegArgs.push('-movflags', '+faststart', outputFileName);
+          }
         }
 
         const exitCode = await ffmpeg.exec(ffmpegArgs, -1, {

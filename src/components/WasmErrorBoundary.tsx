@@ -104,8 +104,8 @@ export class WasmErrorBoundary extends Component<Props, State> {
     // Critical fallback if WebAssembly is absent or an unhandled error occurred
     if (hasError || (capabilitiesChecked && !hasWasm)) {
       return (
-        <div className="min-h-screen bg-[#090b10] text-slate-100 flex items-center justify-center p-6">
-          <div className="max-w-xl w-full rounded-2xl border border-amber-500/30 bg-[#11151f] p-8 shadow-2xl">
+        <div className="min-h-screen bg-[#0c0a09] text-stone-100 flex items-center justify-center p-6">
+          <div className="max-w-xl w-full rounded-2xl border border-amber-500/30 bg-[#141210] p-8 shadow-2xl">
             <div className="flex items-center gap-3 text-amber-400 mb-4">
               <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
                 <ShieldAlert className="w-7 h-7" />
@@ -120,7 +120,7 @@ export class WasmErrorBoundary extends Component<Props, State> {
               </div>
             </div>
 
-            <p className="text-slate-300 text-sm leading-relaxed mb-6">
+            <p className="text-stone-300 text-sm leading-relaxed mb-6">
               This video compressor runs 100% client-side in your browser using{' '}
               <span className="text-white font-medium">WebAssembly (FFmpeg.wasm)</span>,{' '}
               <span className="text-white font-medium">WebAssembly SIMD</span>, and{' '}
@@ -130,21 +130,21 @@ export class WasmErrorBoundary extends Component<Props, State> {
             </p>
 
             {errorMessage && (
-              <div className="mb-6 rounded-xl bg-black/50 border border-slate-800 p-4 font-mono text-xs text-rose-400 flex items-start gap-2.5">
+              <div className="mb-6 rounded-xl bg-black/50 border border-stone-800 p-4 font-mono text-xs text-rose-400 flex items-start gap-2.5">
                 <Terminal className="w-4 h-4 shrink-0 mt-0.5" />
                 <span className="break-all">{errorMessage}</span>
               </div>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 text-xs">
-              <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
-                <span className="text-slate-400 block mb-1">WebAssembly Core</span>
+              <div className="p-3 rounded-lg bg-stone-900/80 border border-stone-800">
+                <span className="text-stone-400 block mb-1">WebAssembly Core</span>
                 <span className={hasWasm ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>
                   {hasWasm ? 'Supported' : 'Missing'}
                 </span>
               </div>
-              <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
-                <span className="text-slate-400 block mb-1">SharedArrayBuffer</span>
+              <div className="p-3 rounded-lg bg-stone-900/80 border border-stone-800">
+                <span className="text-stone-400 block mb-1">SharedArrayBuffer</span>
                 <span
                   className={
                     hasSharedArrayBuffer ? 'text-emerald-400 font-semibold' : 'text-amber-400 font-semibold'
@@ -153,8 +153,8 @@ export class WasmErrorBoundary extends Component<Props, State> {
                   {hasSharedArrayBuffer ? 'Active (COOP/COEP)' : 'Unavailable'}
                 </span>
               </div>
-              <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800">
-                <span className="text-slate-400 block mb-1">WASM SIMD</span>
+              <div className="p-3 rounded-lg bg-stone-900/80 border border-stone-800">
+                <span className="text-stone-400 block mb-1">WASM SIMD</span>
                 <span className={hasSimd ? 'text-emerald-400 font-semibold' : 'text-amber-400 font-semibold'}>
                   {hasSimd ? 'Enabled' : 'Unsupported'}
                 </span>
@@ -165,12 +165,12 @@ export class WasmErrorBoundary extends Component<Props, State> {
               <button
                 type="button"
                 onClick={this.handleReset}
-                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium transition"
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 text-sm font-bold transition"
               >
                 <RefreshCw className="w-4 h-4" />
                 Retry Initialization
               </button>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-stone-400">
                 Recommended: Latest Chrome, Edge, Firefox, or Safari 16.4+ over HTTPS/localhost.
               </span>
             </div>

@@ -1,5 +1,5 @@
 /**
- * Central Ad & Sponsorship Configuration for ClipShrink.
+ * Central Ad & Sponsorship Configuration for BitVidForge.
  *
  * How to connect your A-Ads (aads.com) units:
  * 1. In your A-Ads dashboard, create two Ad Units:

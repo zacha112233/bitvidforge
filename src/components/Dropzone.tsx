@@ -202,24 +202,24 @@ export default function Dropzone({
           }}
           className={`relative group cursor-pointer rounded-2xl border-2 border-dashed transition-all duration-200 p-8 sm:p-10 text-center ${
             isDragging
-              ? 'border-indigo-400 bg-indigo-500/10 shadow-[0_0_40px_-10px_rgba(99,102,241,0.4)]'
-              : 'border-slate-700/80 hover:border-indigo-500/60 bg-[#11151f]/90 hover:bg-[#141926]'
+              ? 'border-amber-400 bg-amber-500/10 shadow-[0_0_40px_-10px_rgba(245,158,11,0.4)]'
+              : 'border-stone-700/80 hover:border-amber-500/60 bg-[#141210]/90 hover:bg-[#191614]'
           } ${disabled ? 'opacity-60 pointer-events-none' : ''}`}
         >
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center mb-4 group-hover:scale-105 group-hover:bg-indigo-500/15 transition-transform">
-            <UploadCloud className="w-8 h-8 text-indigo-400" />
+          <div className="mx-auto w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center mb-4 group-hover:scale-105 group-hover:bg-amber-500/15 transition-transform">
+            <UploadCloud className="w-8 h-8 text-amber-400" />
           </div>
 
           <h3 className="text-lg sm:text-xl font-semibold text-white mb-1.5">
             Drop one or more videos here, or{' '}
-            <span className="text-indigo-400 underline decoration-indigo-500/40 underline-offset-4">
+            <span className="text-amber-400 underline decoration-amber-500/40 underline-offset-4">
               browse files
             </span>
           </h3>
-          <p className="text-sm text-slate-400 mb-6">
-            Supports single or <span className="text-slate-200 font-medium">batch queue</span>{' '}
-            compression of <span className="text-slate-200 font-medium">MP4, MOV, and WebM</span>{' '}
-            up to <span className="text-slate-200 font-medium">500MB</span> each
+          <p className="text-sm text-stone-400 mb-6">
+            Supports single or <span className="text-stone-200 font-medium">batch queue</span>{' '}
+            compression of <span className="text-stone-200 font-medium">MP4, MOV, and WebM</span>{' '}
+            up to <span className="text-stone-200 font-medium">500MB</span> each
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -227,16 +227,16 @@ export default function Dropzone({
               type="button"
               onClick={handleLoadDemoClip}
               disabled={disabled || isLoadingDemo}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 border border-slate-600/60 text-slate-100 text-xs sm:text-sm font-medium transition shadow-sm"
+              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-stone-800/90 hover:bg-stone-700/90 border border-stone-600/60 text-stone-100 text-xs sm:text-sm font-medium transition shadow-sm"
             >
               {isLoadingDemo ? (
                 <>
-                  <Loader2 className="w-4 h-4 text-indigo-400 animate-spin" />
+                  <Loader2 className="w-4 h-4 text-amber-400 animate-spin" />
                   Loading 3MB Demo Clip...
                 </>
               ) : (
                 <>
-                  <PlayCircle className="w-4 h-4 text-indigo-400" />
+                  <PlayCircle className="w-4 h-4 text-amber-400" />
                   Don&apos;t have a file? Try with Demo Clip
                 </>
               )}
@@ -248,14 +248,14 @@ export default function Dropzone({
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
-          className={`rounded-2xl border transition-all bg-[#11151f] p-5 sm:p-6 shadow-lg space-y-4 ${
-            isDragging ? 'border-indigo-400 bg-indigo-500/5' : 'border-indigo-500/30'
+          className={`rounded-2xl border transition-all bg-[#141210] p-5 sm:p-6 shadow-lg space-y-4 ${
+            isDragging ? 'border-amber-400 bg-amber-500/5' : 'border-amber-500/30'
           }`}
         >
           {/* Batch Queue Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-stone-800/80">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 rounded-xl bg-indigo-500/15 border border-indigo-500/30 text-indigo-400">
+              <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
                 <Layers className="w-4 h-4" />
               </div>
               <div>
@@ -265,11 +265,11 @@ export default function Dropzone({
                       ? 'Selected Video Ready'
                       : `Batch Compression Queue (${queue.length} files)`}
                   </h4>
-                  <span className="text-xs font-mono text-slate-400">
+                  <span className="text-xs font-mono text-stone-400">
                     ({formatBytesToMB(totalQueueBytes)} MB total)
                   </span>
                 </div>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-stone-400">
                   Drop additional files anywhere in this box to append to the batch queue.
                 </p>
               </div>
@@ -280,7 +280,7 @@ export default function Dropzone({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={disabled}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/30 text-xs font-semibold text-indigo-200 border border-indigo-500/30 transition"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-xs font-semibold text-amber-200 border border-amber-500/30 transition"
               >
                 <Plus className="w-3.5 h-3.5" />
                 Add Files
@@ -289,16 +289,16 @@ export default function Dropzone({
                 type="button"
                 onClick={handleLoadDemoClip}
                 disabled={disabled || isLoadingDemo}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 border border-slate-700 transition"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-xs font-medium text-stone-200 border border-stone-700 transition"
               >
-                <PlayCircle className="w-3.5 h-3.5 text-indigo-400" />
+                <PlayCircle className="w-3.5 h-3.5 text-amber-400" />
                 + Demo Clip
               </button>
               <button
                 type="button"
                 onClick={onClearQueue}
                 disabled={disabled}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-rose-500/20 hover:text-rose-300 text-xs font-medium text-slate-400 border border-slate-700 transition"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-stone-800/80 hover:bg-rose-500/20 hover:text-rose-300 text-xs font-medium text-stone-400 border border-stone-700 transition"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Clear All
@@ -325,15 +325,15 @@ export default function Dropzone({
                   key={item.id}
                   className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl border transition ${
                     isSelectedForInspect
-                      ? 'bg-indigo-950/30 border-indigo-500/50'
-                      : 'bg-[#090b10]/90 border-slate-800/90 hover:border-slate-700'
+                      ? 'bg-amber-950/30 border-amber-500/50'
+                      : 'bg-[#0c0a09]/90 border-stone-800/90 hover:border-stone-700'
                   }`}
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center shrink-0 font-mono text-xs text-indigo-300">
+                    <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0 font-mono text-xs text-amber-300">
                       {idx + 1}
                     </div>
-                    <FileVideo className="w-5 h-5 text-indigo-400 shrink-0 hidden sm:block" />
+                    <FileVideo className="w-5 h-5 text-amber-400 shrink-0 hidden sm:block" />
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-semibold text-white truncate max-w-[220px] sm:max-w-xs">
@@ -341,13 +341,13 @@ export default function Dropzone({
                         </span>
 
                         {item.status === 'pending' && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-800 text-slate-300 border border-slate-700">
-                            <Clock className="w-3 h-3 text-slate-400" />
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-stone-800 text-stone-300 border border-stone-700">
+                            <Clock className="w-3 h-3 text-stone-400" />
                             Queued
                           </span>
                         )}
                         {item.status === 'processing' && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">
                             <Loader2 className="w-3 h-3 animate-spin" />
                             Encoding
                           </span>
@@ -372,7 +372,7 @@ export default function Dropzone({
                         )}
                       </div>
 
-                      <div className="flex items-center gap-2.5 mt-0.5 text-xs text-slate-400 font-mono">
+                      <div className="flex items-center gap-2.5 mt-0.5 text-xs text-stone-400 font-mono">
                         <span>{formatBytesToMB(item.file.size)} MB</span>
                         {item.compressedBlob && (
                           <>
@@ -407,7 +407,7 @@ export default function Dropzone({
                       onClick={() => onRemoveItem(item.id)}
                       disabled={disabled}
                       aria-label={`Remove ${item.file.name}`}
-                      className="p-1.5 rounded-lg bg-slate-800/80 hover:bg-rose-500/20 hover:text-rose-300 text-slate-400 border border-slate-700 transition"
+                      className="p-1.5 rounded-lg bg-stone-800/80 hover:bg-rose-500/20 hover:text-rose-300 text-stone-400 border border-stone-700 transition"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -418,11 +418,11 @@ export default function Dropzone({
           </div>
 
           {queue.some((q) => q.file.name.startsWith('sample')) && (
-            <div className="pt-2 border-t border-slate-800/80 flex items-center gap-2 text-xs text-indigo-300">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+            <div className="pt-2 border-t border-stone-800/80 flex items-center gap-2 text-xs text-amber-300">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400 shrink-0" />
               <span>
                 Demo clip loaded from{' '}
-                <code className="font-mono text-indigo-200">/public/demo/sample.mp4</code> (3.0 MB,
+                <code className="font-mono text-amber-200">/public/demo/sample.mp4</code> (3.0 MB,
                 720p 30fps, 10s).
               </span>
             </div>

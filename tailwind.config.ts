@@ -10,9 +10,9 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: '#090b10',
-        surface: '#11151f',
-        surfaceHighlight: '#1a2030',
+        background: '#0c0a09',
+        surface: '#141210',
+        surfaceHighlight: '#1c1917',
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
