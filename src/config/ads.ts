@@ -20,8 +20,18 @@ export interface AdConfig {
 }
 
 export const AD_CONFIG: AdConfig = {
-  aadsUnit728x90: process.env.NEXT_PUBLIC_AADS_UNIT_728X90 || '',
-  aadsUnit300x250: process.env.NEXT_PUBLIC_AADS_UNIT_300X250 || '',
+  aadsUnit728x90:
+    process.env.NEXT_PUBLIC_AADS_UNIT_728X90 ||
+    process.env.NEXT_PUBLIC_AADS_UNIT_728x90 ||
+    process.env.NEXT_PUBLIC_AADS_728X90 ||
+    process.env.NEXT_PUBLIC_AADS_728x90 ||
+    '',
+  aadsUnit300x250:
+    process.env.NEXT_PUBLIC_AADS_UNIT_300X250 ||
+    process.env.NEXT_PUBLIC_AADS_UNIT_300x250 ||
+    process.env.NEXT_PUBLIC_AADS_300X250 ||
+    process.env.NEXT_PUBLIC_AADS_300x250 ||
+    '',
   sponsorInquiryUrl:
     process.env.NEXT_PUBLIC_SPONSOR_URL || 'https://aads.com',
 };

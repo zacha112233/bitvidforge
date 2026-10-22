@@ -497,9 +497,10 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* Persistent 728x90 A-Ads Banner Slot (also allows A-Ads bot to verify unit on page load) */}
-          <section className="pt-2 flex justify-center">
+          {/* Persistent 728x90 & 300x250 A-Ads Banner Slots (ensures A-Ads bot verifies both units on initial page load) */}
+          <section className="pt-2 flex flex-col items-center gap-4">
             <AdSlot size="728x90" />
+            <AdSlot size="300x250" />
           </section>
 
           {/* SEO & AI Knowledge Section: 2026 Platform Upload Limits Table, Bitrate Guide & FAQ */}
