@@ -12,6 +12,8 @@ import {
   Archive,
   Layers,
   Loader2,
+  Share2,
+  Check,
 } from 'lucide-react';
 import { BatchQueueItem, formatBytesToMB } from './Dropzone';
 
@@ -37,6 +39,36 @@ export default function ComparisonSlider({
   const [originalUrl, setOriginalUrl] = useState<string>('');
   const [compressedUrl, setCompressedUrl] = useState<string>('');
   const [isZipping, setIsZipping] = useState<boolean>(false);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+
+  const handleShareTool = async () => {
+    const shareUrl = 'https://bitvidforge.vercel.app';
+    const shareTitle = 'BitVidForge — Free In-Browser Video Compressor, GIF & MP3 Studio';
+    const shareText = `Just shrunk my video by ${savedPct}% (${originalMB}MB -> ${compressedMB}MB) in-browser with zero uploads using BitVidForge:`;
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+        return;
+      } catch {
+        // Fallback to clipboard copy if user cancels share sheet
+      }
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopiedLink(true);
+        window.setTimeout(() => setCopiedLink(false), 3000);
+      } catch {
+        // ignore clipboard error
+      }
+    }
+  };
 
   useEffect(() => {
     const origObjUrl = URL.createObjectURL(originalFile);
@@ -151,6 +183,24 @@ export default function ComparisonSlider({
             {originalMB}MB -&gt; {compressedMB}MB ({savedPct}% saved) • Local Memory Cleaned
           </p>
         </div>
+
+        <button
+          type="button"
+          onClick={handleShareTool}
+          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-semibold transition self-start md:self-center"
+        >
+          {copiedLink ? (
+            <>
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
+              <span className="text-emerald-300">Link Copied! Paste in Discord/Slack</span>
+            </>
+          ) : (
+            <>
+              <Share2 className="w-3.5 h-3.5 text-amber-400" />
+              <span>Saved {savedPct}%? Share BitVidForge</span>
+            </>
+          )}
+        </button>
       </div>
 
       {/* Side-by-Side Size Comparison Cards */}

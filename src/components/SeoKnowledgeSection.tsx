@@ -1,6 +1,40 @@
 import React from 'react';
-import { HelpCircle, Table2, CheckCircle2, Sparkles } from 'lucide-react';
+import Link from 'next/link';
+import { HelpCircle, Table2, CheckCircle2, Sparkles, Compass, ArrowUpRight } from 'lucide-react';
 import { FAQ_ITEMS } from './SeoStructuredData';
+
+export const SEO_TOOL_PAGES = [
+  {
+    href: '/discord-video-compressor',
+    title: 'Discord 10MB Video Compressor',
+    desc: 'Pre-configured 9.5 MB & 48 MB Nitro targets for instant Discord sharing.',
+  },
+  {
+    href: '/whatsapp-video-compressor',
+    title: 'WhatsApp 16MB Video Compressor',
+    desc: 'Shrink mobile & desktop clips under the 16 MB WhatsApp media cap.',
+  },
+  {
+    href: '/video-to-gif',
+    title: 'MP4 to High-FPS GIF Converter',
+    desc: '192-color adaptive palette GIF generator for Discord, Slack & GitHub.',
+  },
+  {
+    href: '/extract-mp3-from-video',
+    title: 'Extract MP3 Audio from Video',
+    desc: '1-click 192 kbps stereo MP3 audio extraction with zero server uploads.',
+  },
+  {
+    href: '/compress-video-for-email',
+    title: 'Email Attachment Video Shrinker',
+    desc: 'Make large recordings fit Gmail, Outlook & Apple Mail (<10 MB).',
+  },
+  {
+    href: '/',
+    title: 'BitVidForge Full Media Studio',
+    desc: 'All-in-one WebAssembly compressor, dead-air trimmer & batch ZIP exporter.',
+  },
+];
 
 export default function SeoKnowledgeSection() {
   const platformLimits = [
@@ -159,6 +193,44 @@ export default function SeoKnowledgeSection() {
           ))}
         </div>
       </div>
+
+      {/* Internal SEO Link Cluster: Specialized In-Browser Media Tools */}
+      <nav
+        aria-label="Specialized Video Compression & Conversion Tools"
+        className="rounded-2xl border border-stone-800/90 bg-[#141210]/90 p-5 sm:p-6 space-y-4"
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
+            <Compass className="w-4 h-4" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-white">
+              Specialized In-Browser Tools &amp; Presets
+            </h2>
+            <p className="text-xs text-stone-400">
+              Jump directly to a pre-configured workflow for your platform or output format.
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {SEO_TOOL_PAGES.map((tool) => (
+            <Link
+              key={tool.href}
+              href={tool.href}
+              className="group rounded-xl bg-[#0c0a09] border border-stone-800 hover:border-amber-500/50 p-3.5 transition flex flex-col justify-between gap-1.5"
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-xs font-bold text-white group-hover:text-amber-300 transition">
+                  {tool.title}
+                </span>
+                <ArrowUpRight className="w-3.5 h-3.5 text-stone-500 group-hover:text-amber-400 shrink-0 transition" />
+              </div>
+              <p className="text-[11px] text-stone-400 leading-relaxed">{tool.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </nav>
     </section>
   );
 }

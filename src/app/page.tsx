@@ -27,7 +27,21 @@ import AdSlot from '@/components/AdSlot';
 import SeoKnowledgeSection from '@/components/SeoKnowledgeSection';
 import { WasmErrorBoundary } from '@/components/WasmErrorBoundary';
 
-export default function HomePage() {
+export interface CompressorStudioProps {
+  initialPreset?: PresetId;
+  initialFormat?: OutputFormatOption;
+  heroTitlePrefix?: string;
+  heroTitleHighlight?: string;
+  heroDescription?: string;
+}
+
+export function CompressorStudio({
+  initialPreset = 'discord',
+  initialFormat = 'mp4-h264',
+  heroTitlePrefix = 'Smaller Videos,',
+  heroTitleHighlight = 'GIFs & Audio',
+  heroDescription = "Fit Discord's 10MB cap, WhatsApp, or Slack with precision bitrate targeting, instant dead-air trimming, and 1-click GIF or MP3 extraction — 100% locally.",
+}: CompressorStudioProps = {}) {
   const {
     isLoaded,
     isLoading,
@@ -49,13 +63,13 @@ export default function HomePage() {
   const [batchTotalToProcess, setBatchTotalToProcess] = useState<number>(1);
   const [activeProcessingName, setActiveProcessingName] = useState<string>('video.mp4');
 
-  const [selectedPreset, setSelectedPreset] = useState<PresetId>('discord');
+  const [selectedPreset, setSelectedPreset] = useState<PresetId>(initialPreset);
   const [customSizeMB, setCustomSizeMB] = useState<number>(15);
   const [trimStart, setTrimStart] = useState<number>(0);
   const [trimEnd, setTrimEnd] = useState<number>(10);
   const [resolution, setResolution] = useState<ResolutionOption>('original');
   const [fps, setFps] = useState<FramerateOption>('original');
-  const [formatCodec, setFormatCodec] = useState<OutputFormatOption>('mp4-h264');
+  const [formatCodec, setFormatCodec] = useState<OutputFormatOption>(initialFormat);
   const [muteAudio, setMuteAudio] = useState<boolean>(false);
   const [multiThreading, setMultiThreading] = useState<boolean>(true);
   const [outboundPostPutCount, setOutboundPostPutCount] = useState<number>(0);
@@ -345,14 +359,13 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-              Smaller Videos,{' '}
+              {heroTitlePrefix}{' '}
               <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-orange-500 bg-clip-text text-transparent">
-                GIFs &amp; Audio
+                {heroTitleHighlight}
               </span>
             </h1>
             <p className="max-w-2xl mx-auto text-sm sm:text-base text-stone-400 leading-relaxed">
-              Fit Discord&apos;s 10MB cap, WhatsApp, or Slack with precision bitrate targeting,
-              instant dead-air trimming, and 1-click GIF or MP3 extraction — 100% locally.
+              {heroDescription}
             </p>
           </section>
 
@@ -561,4 +574,8 @@ export default function HomePage() {
       </div>
     </WasmErrorBoundary>
   );
+}
+
+export default function HomePage() {
+  return <CompressorStudio />;
 }
