@@ -4,10 +4,7 @@ import SeoStructuredData from '@/components/SeoStructuredData';
 import './globals.css';
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'https://bitvidforge.vercel.app');
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://bitvidforge.vercel.app';
 
 export const viewport: Viewport = {
   themeColor: '#0c0a09',

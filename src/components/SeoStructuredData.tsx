@@ -1,10 +1,7 @@
 import React from 'react';
 
 const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL
-    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : 'https://bitvidforge.vercel.app');
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://bitvidforge.vercel.app';
 
 export const FAQ_ITEMS = [
   {
