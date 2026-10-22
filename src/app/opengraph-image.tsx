@@ -82,8 +82,8 @@ export default function OpenGraphImage() {
               flexDirection: 'column',
             }}
           >
-            <span>Forge Smaller Videos,</span>
-            <span style={{ color: '#fbbf24' }}>High-FPS GIFs &amp; MP3 Audio</span>
+            <span>Smaller Videos,</span>
+            <span style={{ color: '#fbbf24' }}>GIFs &amp; Audio</span>
           </div>
           <div style={{ fontSize: '26px', color: '#a8a29e', lineHeight: 1.4 }}>
             Hit Discord&apos;s 10MB cap, WhatsApp 16MB, or Slack 50MB on the first try with

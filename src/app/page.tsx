@@ -345,7 +345,7 @@ export default function HomePage() {
             </div>
 
             <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white">
-              Forge Smaller Videos,{' '}
+              Smaller Videos,{' '}
               <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-orange-500 bg-clip-text text-transparent">
                 GIFs &amp; Audio
               </span>
@@ -497,8 +497,13 @@ export default function HomePage() {
             </div>
           </section>
 
-          {/* Persistent 728x90 & 300x250 A-Ads Banner Slots (ensures A-Ads bot verifies both units on initial page load) */}
+          {/* Persistent 728x90 & 300x250 A-Ads Banner Slots + Non-Intrusive Ad-Blocker Support Note */}
           <section className="pt-2 flex flex-col items-center gap-4">
+            <div className="w-full max-w-[728px] rounded-xl bg-stone-900/60 border border-stone-800/80 px-4 py-2.5 text-center text-xs text-stone-400">
+              <span className="font-semibold text-amber-300">Support BitVidForge:</span> This tool
+              is 100% free with no paywalls, watermarks, or signups. Please consider turning off
+              your ad blocker for this site to help fund ongoing development and future releases.
+            </div>
             <AdSlot size="728x90" />
             <AdSlot size="300x250" />
           </section>

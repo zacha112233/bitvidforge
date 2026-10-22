@@ -241,8 +241,11 @@ export default function ProcessingStatus({
           {/* Right Column: Standardized 300x250 Medium Rectangle Sponsor / Ad Space (A-Ads Ready) */}
           <div className="lg:col-span-5 flex flex-col items-center justify-center rounded-2xl border border-stone-800 bg-[#141210] p-5">
             <AdSlot size="300x250" />
-            <p className="text-[11px] text-stone-500 mt-3 text-center max-w-[300px]">
-              Keep this tab open while WebAssembly finishes encoding your video locally.
+            <p className="text-[11px] text-stone-400 mt-3 text-center max-w-[300px] leading-relaxed">
+              Keep this tab open while WebAssembly encodes locally.{' '}
+              <span className="text-stone-500">
+                Whitelisting BitVidForge in your ad blocker helps support future releases.
+              </span>
             </p>
           </div>
         </div>
