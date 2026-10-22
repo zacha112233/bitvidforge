@@ -522,20 +522,35 @@ export default function HomePage() {
           onCancel={handleCancelTranscoding}
         />
 
-        {/* Footer */}
-        <footer className="relative z-10 border-t border-stone-800/70 py-5 text-center text-xs text-stone-500">
-          <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span>
-              Powered by Next.js App Router, Tailwind CSS &amp; @ffmpeg/ffmpeg (v0.12 WebAssembly)
-            </span>
-            <span className="font-mono text-[11px] text-stone-400">
-              COOP: same-origin • COEP: require-corp • WASM Engine:{' '}
-              {isLoaded
-                ? isMultiThreaded
-                  ? 'Loaded (MT Pthreads)'
-                  : 'Loaded (ST)'
-                : 'Standby'}
-            </span>
+        {/* Footer & Concise Privacy / Legal Disclaimer */}
+        <footer className="relative z-10 border-t border-stone-800/70 py-6 text-xs text-stone-500">
+          <div className="max-w-5xl mx-auto px-4 space-y-3">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left">
+              <span>
+                <strong className="text-stone-300">BitVidForge</strong> • Powered by Next.js,
+                Tailwind CSS &amp; @ffmpeg/ffmpeg (v0.12 WebAssembly)
+              </span>
+              <span className="font-mono text-[11px] text-stone-400">
+                COOP: same-origin • COEP: credentialless • WASM Engine:{' '}
+                {isLoaded
+                  ? isMultiThreaded
+                    ? 'Loaded (MT Pthreads)'
+                    : 'Loaded (ST)'
+                  : 'Standby'}
+              </span>
+            </div>
+
+            <p className="text-[11px] text-stone-500 leading-relaxed text-center sm:text-left border-t border-stone-800/50 pt-3">
+              <strong className="text-stone-400">Privacy &amp; Legal Disclaimer:</strong> No
+              cookies are required and no behavioral trackers, third-party profiling scripts, or
+              user accounts are used on this web app. All media files are processed 100% locally on
+              your device and are never uploaded or stored on any server. This software is provided
+              &ldquo;as is&rdquo; without warranties of any kind; users are solely responsible for
+              backing up their original files and ensuring they have the rights to process their
+              media. Discord, WhatsApp, Slack, and other referenced names are trademarks of their
+              respective owners (BitVidForge is an independent tool and is not affiliated with
+              them).
+            </p>
           </div>
         </footer>
       </div>
