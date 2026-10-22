@@ -19,6 +19,9 @@
 | **Mute Video / Remove Audio** | Strip audio tracks (`-an`) and boost video bitrate quality | [bitvidforge.vercel.app/mute-video-online](https://bitvidforge.vercel.app/mute-video-online) |
 | **Slack & GitHub PR Compressor** | NDA-safe local screen recording compressor for remote teams | [bitvidforge.vercel.app/slack-video-compressor](https://bitvidforge.vercel.app/slack-video-compressor) |
 | **Email Video Shrinker (<10MB)** | Compress recordings for Gmail, Outlook & Apple Mail | [bitvidforge.vercel.app/compress-video-for-email](https://bitvidforge.vercel.app/compress-video-for-email) |
+| **YouTube to Discord 10MB Clipper** | Import permitted YouTube / Shorts links, trim & shrink `<10MB` | [bitvidforge.vercel.app/youtube-to-discord](https://bitvidforge.vercel.app/youtube-to-discord) |
+| **YouTube to High-FPS GIF Maker** | Convert permitted YouTube clips into 192-color looping GIFs | [bitvidforge.vercel.app/youtube-to-gif](https://bitvidforge.vercel.app/youtube-to-gif) |
+| **YouTube to 192kbps MP3 Extractor** | Extract stereo MP3 audio with start/end timestamp trimming | [bitvidforge.vercel.app/youtube-to-mp3](https://bitvidforge.vercel.app/youtube-to-mp3) |
 
 ---
 

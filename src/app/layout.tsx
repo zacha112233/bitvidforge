@@ -21,13 +21,17 @@ export const metadata: Metadata = {
     template: '%s | BitVidForge',
   },
   description:
-    'Shrink any MP4, MOV, or WebM video to fit Discord (10MB Free / 50MB Nitro), WhatsApp (16MB), Slack, or Email in seconds. 100% private in-browser WebAssembly video compressor with built-in dead-air trimmer, high-FPS GIF maker & MP3 audio extractor.',
+    'Shrink any MP4, MOV, WebM, or YouTube video link to fit Discord (10MB Free / 50MB Nitro), WhatsApp (16MB), Slack, or Email in seconds. In-browser WebAssembly video compressor with built-in dead-air trimmer, high-FPS GIF maker & MP3 audio extractor.',
   applicationName: 'BitVidForge',
   keywords: [
     'BitVidForge',
     'video compressor for Discord',
     'compress video under 10MB',
     'Discord 10MB video compressor',
+    'YouTube to Discord 10MB compressor',
+    'YouTube video trimmer and compressor',
+    'YouTube to GIF maker',
+    'YouTube to MP3 extractor',
     'WhatsApp 16MB video compressor',
     'free online video compressor no upload',
     'client-side WebAssembly video compressor',

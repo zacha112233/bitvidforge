@@ -17,6 +17,8 @@ import {
   Clock,
   Ban,
   ClipboardPaste,
+  Link2,
+  ShieldAlert,
 } from 'lucide-react';
 
 export type QueueItemStatus = 'pending' | 'processing' | 'completed' | 'cancelled' | 'error';
@@ -69,6 +71,14 @@ export default function Dropzone({
   const [isDragging, setIsDragging] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [isLoadingDemo, setIsLoadingDemo] = useState(false);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [isLoadingYoutube, setIsLoadingYoutube] = useState(false);
+  const [youtubeProgress, setYoutubeProgress] = useState<{
+    loadedMB: string;
+    totalMB: string;
+    pct: number;
+    title?: string;
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const validateAndAddFiles = useCallback(
@@ -108,21 +118,131 @@ export default function Dropzone({
     [onFilesAdded]
   );
 
-  // Support Ctrl+V / Cmd+V clipboard video paste anywhere on the page
+  const importYouTubeUrl = useCallback(
+    async (rawUrlToLoad: string) => {
+      const trimmed = rawUrlToLoad.trim();
+      if (!trimmed || disabled || isLoadingYoutube) return;
+
+      setValidationError(null);
+      setIsLoadingYoutube(true);
+      setYoutubeProgress({ loadedMB: '0.0', totalMB: '...', pct: 0 });
+
+      try {
+        const response = await fetch(
+          `/api/youtube?url=${encodeURIComponent(trimmed)}`
+        );
+
+        if (!response.ok) {
+          let errMsg = `Failed to import YouTube link (HTTP ${response.status}).`;
+          try {
+            const errJson = await response.json();
+            if (errJson?.error) errMsg = errJson.error;
+          } catch {
+            // ignore json parse failure
+          }
+          throw new Error(errMsg);
+        }
+
+        const totalBytes = parseInt(
+          response.headers.get('Content-Length') || '0',
+          10
+        );
+        const rawTitle = response.headers.get('X-Video-Title');
+        const rawFilename = response.headers.get('X-Video-Filename');
+        const decodedTitle = rawTitle
+          ? decodeURIComponent(rawTitle)
+          : 'YouTube Video';
+        const filename = rawFilename
+          ? decodeURIComponent(rawFilename)
+          : 'youtube_video.mp4';
+
+        let blob: Blob;
+        if (response.body && totalBytes > 0) {
+          const reader = response.body.getReader();
+          const chunks: Uint8Array[] = [];
+          let receivedBytes = 0;
+          const totalMBStr = formatBytesToMB(totalBytes);
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            if (value) {
+              chunks.push(value);
+              receivedBytes += value.byteLength;
+              const pct = Math.min(
+                99,
+                Math.round((receivedBytes / totalBytes) * 100)
+              );
+              setYoutubeProgress({
+                loadedMB: formatBytesToMB(receivedBytes),
+                totalMB: totalMBStr,
+                pct,
+                title: decodedTitle,
+              });
+            }
+          }
+          blob = new Blob(chunks as BlobPart[], { type: 'video/mp4' });
+        } else {
+          blob = await response.blob();
+        }
+
+        const ytFile = new File([blob], filename, {
+          type: 'video/mp4',
+          lastModified: Date.now(),
+        });
+
+        validateAndAddFiles([ytFile]);
+        setYoutubeUrl('');
+      } catch (err) {
+        setValidationError(
+          err instanceof Error
+            ? err.message
+            : 'Could not import YouTube video link.'
+        );
+      } finally {
+        setIsLoadingYoutube(false);
+        setYoutubeProgress(null);
+      }
+    },
+    [disabled, isLoadingYoutube, validateAndAddFiles]
+  );
+
+  // Support Ctrl+V / Cmd+V clipboard video OR YouTube link paste anywhere on the page
   useEffect(() => {
     if (typeof window === 'undefined' || disabled) return;
 
     const handleWindowPaste = (e: ClipboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      const isTextInput =
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable);
+
       const files = e.clipboardData?.files;
       if (files && files.length > 0) {
         e.preventDefault();
         validateAndAddFiles(files);
+        return;
+      }
+
+      if (!isTextInput) {
+        const text = e.clipboardData?.getData('text/plain')?.trim() || '';
+        if (
+          /(?:youtube\.com\/(?:watch\?.*v=|shorts\/|embed\/|live\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i.test(
+            text
+          )
+        ) {
+          e.preventDefault();
+          setYoutubeUrl(text);
+          importYouTubeUrl(text);
+        }
       }
     };
 
     window.addEventListener('paste', handleWindowPaste);
     return () => window.removeEventListener('paste', handleWindowPaste);
-  }, [disabled, validateAndAddFiles]);
+  }, [disabled, validateAndAddFiles, importYouTubeUrl]);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -264,7 +384,7 @@ export default function Dropzone({
 
             <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-900/90 border border-stone-800 text-stone-400 text-xs font-mono">
               <ClipboardPaste className="w-3.5 h-3.5 text-amber-400" />
-              <span>or press Ctrl+V to paste video</span>
+              <span>or press Ctrl+V to paste video / YouTube link</span>
             </span>
           </div>
         </div>
@@ -454,6 +574,86 @@ export default function Dropzone({
           )}
         </div>
       )}
+
+      {/* YouTube URL Import Bar + Live RAM Stream Progress + Copyright Disclaimer */}
+      <div className="rounded-2xl border border-stone-800/90 bg-[#141210]/95 p-4 sm:p-5 space-y-3">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            importYouTubeUrl(youtubeUrl);
+          }}
+          className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5"
+        >
+          <div className="relative flex-1">
+            <Link2 className="w-4 h-4 text-amber-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="url"
+              value={youtubeUrl}
+              onChange={(e) => setYoutubeUrl(e.target.value)}
+              disabled={disabled || isLoadingYoutube}
+              placeholder="Or paste a YouTube video / Shorts link (e.g. https://youtu.be/...)"
+              aria-label="YouTube video or Shorts URL"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[#0c0a09] border border-stone-700/80 focus:border-amber-500 focus:outline-none text-xs sm:text-sm text-white placeholder:text-stone-500 transition"
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={disabled || isLoadingYoutube || !youtubeUrl.trim()}
+            className={`px-4 py-2.5 rounded-xl font-semibold text-xs sm:text-sm inline-flex items-center justify-center gap-2 transition shrink-0 ${
+              !disabled && !isLoadingYoutube && youtubeUrl.trim()
+                ? 'bg-amber-500 hover:bg-amber-400 text-stone-950 shadow-sm cursor-pointer'
+                : 'bg-stone-800/80 text-stone-500 border border-stone-700/70 cursor-not-allowed'
+            }`}
+          >
+            {isLoadingYoutube ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-amber-400" />
+                <span>Importing to RAM...</span>
+              </>
+            ) : (
+              <>
+                <Plus className="w-4 h-4" />
+                <span>Load YouTube Link</span>
+              </>
+            )}
+          </button>
+        </form>
+
+        {isLoadingYoutube && youtubeProgress && (
+          <div className="space-y-1.5 pt-1">
+            <div className="flex items-center justify-between text-xs font-mono text-amber-300">
+              <span className="truncate max-w-[70%]">
+                {youtubeProgress.title
+                  ? `Streaming "${youtubeProgress.title}" into local RAM...`
+                  : 'Resolving YouTube MP4 stream...'}
+              </span>
+              <span>
+                {youtubeProgress.loadedMB} / {youtubeProgress.totalMB} MB (
+                {youtubeProgress.pct}%)
+              </span>
+            </div>
+            <div className="w-full h-1.5 rounded-full bg-stone-800 overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-150"
+                style={{ width: `${Math.max(4, youtubeProgress.pct)}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="flex items-start gap-2 text-[11px] text-stone-400 leading-relaxed pt-0.5">
+          <ShieldAlert className="w-3.5 h-3.5 text-amber-400/90 shrink-0 mt-0.5" />
+          <p>
+            <strong className="text-stone-300">
+              YouTube Link &amp; Copyright Disclaimer:
+            </strong>{' '}
+            By importing a YouTube URL, you confirm that the video is your own
+            content, licensed under Creative Commons / Public Domain, or
+            authorized for use. Users are solely responsible for complying with
+            applicable copyright laws and YouTube&apos;s Terms of Service.
+          </p>
+        </div>
+      </div>
 
       {validationError && (
         <div

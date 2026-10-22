@@ -10,6 +10,21 @@ export const SEO_TOOL_PAGES = [
     desc: 'Pre-configured 9.5 MB & 48 MB Nitro targets for instant Discord sharing.',
   },
   {
+    href: '/youtube-to-discord',
+    title: 'YouTube to Discord 10MB Clipper',
+    desc: 'Paste a YouTube or Shorts link, trim timestamps, and shrink under 10MB.',
+  },
+  {
+    href: '/youtube-to-gif',
+    title: 'YouTube to High-FPS GIF Maker',
+    desc: 'Turn any YouTube clip or Short into a smooth 192-color looping GIF.',
+  },
+  {
+    href: '/youtube-to-mp3',
+    title: 'YouTube to 192kbps MP3 Extractor',
+    desc: 'Import a permitted YouTube link, trim start/end, and extract stereo MP3.',
+  },
+  {
     href: '/whatsapp-video-compressor',
     title: 'WhatsApp 16MB Video Compressor',
     desc: 'Shrink mobile & desktop clips under the 16 MB WhatsApp media cap.',

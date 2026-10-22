@@ -42,7 +42,7 @@ export function CompressorStudio({
   initialMuteAudio = false,
   heroTitlePrefix = 'Smaller Videos,',
   heroTitleHighlight = 'GIFs & Audio',
-  heroDescription = "Fit Discord's 10MB cap, WhatsApp, or Slack with precision bitrate targeting, instant dead-air trimming, and 1-click GIF or MP3 extraction — 100% locally.",
+  heroDescription = "Drop a video file or paste a YouTube link to fit Discord's 10MB cap, WhatsApp, or Slack with precision bitrate targeting, instant dead-air trimming, and 1-click GIF or MP3 extraction.",
 }: CompressorStudioProps = {}) {
   const {
     isLoaded,
@@ -454,7 +454,7 @@ export function CompressorStudio({
                 >
                   <Sparkles className="w-5 h-5" />
                   {queue.length === 0 ? (
-                    <span>Select a Video or Load Demo Clip to Begin</span>
+                    <span>Select a Video, Paste a YouTube Link, or Load Demo Clip</span>
                   ) : formatCodec === 'gif' ? (
                     <span>
                       Forge High-FPS Animated GIF
@@ -561,15 +561,22 @@ export function CompressorStudio({
             </div>
 
             <p className="text-[11px] text-stone-500 leading-relaxed text-center sm:text-left border-t border-stone-800/50 pt-3">
-              <strong className="text-stone-400">Privacy &amp; Legal Disclaimer:</strong> No
-              cookies are required and no behavioral trackers, third-party profiling scripts, or
-              user accounts are used on this web app. All media files are processed 100% locally on
-              your device and are never uploaded or stored on any server. This software is provided
-              &ldquo;as is&rdquo; without warranties of any kind; users are solely responsible for
-              backing up their original files and ensuring they have the rights to process their
-              media. Discord, WhatsApp, Slack, and other referenced names are trademarks of their
-              respective owners (BitVidForge is an independent tool and is not affiliated with
-              them).
+              <strong className="text-stone-400">
+                Privacy, Copyright &amp; Legal Disclaimer:
+              </strong>{' '}
+              No cookies are required and no behavioral trackers, third-party profiling scripts, or
+              user accounts are used on this web app. Local media files are processed 100% in your
+              browser&apos;s WebAssembly RAM and are never uploaded or stored on any server. When
+              using the optional YouTube URL importer, streams are transiently fetched into your
+              local browser memory solely at your direction; BitVidForge does not host, archive, or
+              redistribute third-party videos. Users are solely responsible for ensuring they own
+              the copyright, have obtained permission, or qualify under Creative Commons / Public
+              Domain / fair use before importing or converting any YouTube link or media file, and
+              for complying with YouTube&apos;s Terms of Service and applicable copyright laws
+              (including the DMCA). This software is provided &ldquo;as is&rdquo; without
+              warranties of any kind. YouTube, Google, Discord, WhatsApp, Slack, and other
+              referenced names are trademarks of their respective owners (BitVidForge is an
+              independent tool and is not affiliated with, endorsed by, or sponsored by them).
             </p>
           </div>
         </footer>

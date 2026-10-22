@@ -34,6 +34,11 @@ export const FAQ_ITEMS = [
     answer:
       'Yes. Drop multiple MP4, MOV, or WebM files (up to 500 MB each) into the queue. BitVidForge processes the entire batch sequentially in WebAssembly memory, cleans up virtual RAM buffers after each file, and lets you download all compressed videos as a single ZIP archive.',
   },
+  {
+    question: 'Can I paste a YouTube link to trim, compress for Discord, or convert to GIF/MP3?',
+    answer:
+      'Yes. Paste any permitted YouTube video or Shorts link into the YouTube URL bar (or press Ctrl+V). BitVidForge streams the MP4 directly into your local browser RAM so you can trim start/end timestamps, shrink it under 10MB for Discord, forge a high-FPS GIF, or extract a 192 kbps MP3.',
+  },
 ];
 
 export default function SeoStructuredData() {
@@ -67,12 +72,13 @@ export default function SeoStructuredData() {
         },
         featureList: [
           'Compress MP4, MOV, and WebM videos to exact MB targets (Discord 10MB Free, WhatsApp 16MB, Discord Nitro & Slack 50MB, Email 9.5MB)',
+          'Import permitted YouTube video & Shorts links directly into browser RAM for trimming, Discord compression, GIF creation, or MP3 extraction',
           '100% client-side WebAssembly transcoding (@ffmpeg/ffmpeg v0.12) with zero server uploads',
           'Built-in Quick Video Trimmer with live frame preview and automatic bitrate quality boost',
           '1-click High-FPS Animated GIF converter using 192-color adaptive palette generation',
           '1-click 192 kbps stereo MP3 audio extractor from any video file',
           'Multi-file batch compression queue with 1-click ZIP archive download',
-          'Side-by-side original vs. compressed video player comparison',
+          'Interactive split-screen wipe & side-by-side original vs. compressed video player comparison',
         ],
       },
       {
