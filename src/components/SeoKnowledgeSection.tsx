@@ -15,6 +15,11 @@ export const SEO_TOOL_PAGES = [
     desc: 'Shrink mobile & desktop clips under the 16 MB WhatsApp media cap.',
   },
   {
+    href: '/mov-to-mp4-converter',
+    title: 'Convert MOV to MP4 in Browser',
+    desc: 'Turn iPhone & Mac QuickTime (.mov) videos into universal H.264 MP4s.',
+  },
+  {
     href: '/video-to-gif',
     title: 'MP4 to High-FPS GIF Converter',
     desc: '192-color adaptive palette GIF generator for Discord, Slack & GitHub.',
@@ -23,6 +28,16 @@ export const SEO_TOOL_PAGES = [
     href: '/extract-mp3-from-video',
     title: 'Extract MP3 Audio from Video',
     desc: '1-click 192 kbps stereo MP3 audio extraction with zero server uploads.',
+  },
+  {
+    href: '/mute-video-online',
+    title: 'Remove Audio / Mute Video',
+    desc: 'Strip background mic noise (-an) and boost video bitrate quality.',
+  },
+  {
+    href: '/slack-video-compressor',
+    title: 'Slack & GitHub PR Compressor',
+    desc: 'NDA-safe client-side screen recording compressor for remote teams.',
   },
   {
     href: '/compress-video-for-email',

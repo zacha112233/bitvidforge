@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import JSZip from 'jszip';
 import {
   Download,
@@ -14,6 +14,10 @@ import {
   Loader2,
   Share2,
   Check,
+  Columns,
+  SplitSquareVertical,
+  Play,
+  Pause,
 } from 'lucide-react';
 import { BatchQueueItem, formatBytesToMB } from './Dropzone';
 
@@ -40,6 +44,29 @@ export default function ComparisonSlider({
   const [compressedUrl, setCompressedUrl] = useState<string>('');
   const [isZipping, setIsZipping] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  const [compareMode, setCompareMode] = useState<'wipe' | 'side-by-side'>('wipe');
+  const [wipePosition, setWipePosition] = useState<number>(50);
+  const [isSyncedPlaying, setIsSyncedPlaying] = useState<boolean>(false);
+
+  const wipeOrigVideoRef = useRef<HTMLVideoElement | null>(null);
+  const wipeCompVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  const toggleSyncedPlayback = () => {
+    const v1 = wipeOrigVideoRef.current;
+    const v2 = wipeCompVideoRef.current;
+    if (!v1 || !v2) return;
+
+    if (v1.paused) {
+      v2.currentTime = v1.currentTime;
+      v1.play().catch(() => {});
+      v2.play().catch(() => {});
+      setIsSyncedPlaying(true);
+    } else {
+      v1.pause();
+      v2.pause();
+      setIsSyncedPlaying(false);
+    }
+  };
 
   const handleShareTool = async () => {
     const shareUrl = 'https://bitvidforge.vercel.app';
@@ -241,60 +268,182 @@ export default function ComparisonSlider({
         </div>
       </div>
 
-      {/* Side-by-Side Video Players */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="rounded-2xl overflow-hidden bg-black border border-stone-800">
-          <div className="px-3.5 py-2.5 bg-stone-900/90 border-b border-stone-800 flex items-center justify-between text-xs font-mono">
-            <span className="text-stone-300 font-semibold">Original Video</span>
-            <span className="text-stone-400">{originalMB} MB</span>
+      {/* Mode Toggle + Video Players (Interactive Split-Screen Wipe OR Side-by-Side) */}
+      {normalizedExt !== '.gif' && normalizedExt !== '.mp3' && (
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-1">
+          <span className="text-xs font-mono uppercase tracking-wider text-stone-400">
+            Visual Quality Inspection Mode
+          </span>
+          <div className="inline-flex items-center gap-1.5 p-1 rounded-xl bg-[#0c0a09] border border-stone-800 self-start">
+            <button
+              type="button"
+              onClick={() => setCompareMode('wipe')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                compareMode === 'wipe'
+                  ? 'bg-amber-500 text-stone-950 shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <SplitSquareVertical className="w-3.5 h-3.5" />
+              <span>Interactive Split Wipe</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setCompareMode('side-by-side')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
+                compareMode === 'side-by-side'
+                  ? 'bg-amber-500 text-stone-950 shadow-sm'
+                  : 'text-stone-400 hover:text-stone-200'
+              }`}
+            >
+              <Columns className="w-3.5 h-3.5" />
+              <span>Side-by-Side Players</span>
+            </button>
           </div>
-          {originalUrl && (
-            <video
-              src={originalUrl}
-              controls
-              muted
-              playsInline
-              className="w-full aspect-video object-contain"
-            />
-          )}
         </div>
-        <div className="rounded-2xl overflow-hidden bg-black border border-emerald-500/30 flex flex-col">
-          <div className="px-3.5 py-2.5 bg-emerald-950/30 border-b border-emerald-500/20 flex items-center justify-between text-xs font-mono">
-            <span className="text-emerald-300 font-semibold">
-              {normalizedExt === '.gif'
-                ? 'Generated Animated GIF'
-                : normalizedExt === '.mp3'
-                ? 'Extracted MP3 Audio'
-                : 'Compressed Video'}
-            </span>
-            <span className="text-emerald-400">{compressedMB} MB</span>
-          </div>
-          {compressedUrl && normalizedExt === '.gif' && (
-            <img
-              src={compressedUrl}
-              alt="Compressed animated GIF preview"
-              className="w-full aspect-video object-contain"
-            />
-          )}
-          {compressedUrl && normalizedExt === '.mp3' && (
-            <div className="w-full aspect-video flex flex-col items-center justify-center p-6 gap-4 bg-[#0c0a09]">
-              <span className="text-xs font-mono text-amber-300">
-                192 kbps Stereo MP3 Audio Stream Ready
-              </span>
-              <audio src={compressedUrl} controls className="w-full max-w-sm" />
+      )}
+
+      {normalizedExt !== '.gif' && normalizedExt !== '.mp3' && compareMode === 'wipe' ? (
+        <div className="rounded-2xl overflow-hidden bg-black border border-amber-500/30 space-y-3 p-3 sm:p-4">
+          <div className="relative w-full aspect-video rounded-xl overflow-hidden bg-black select-none">
+            {/* Base Layer: Compressed Video (Right Side) */}
+            {compressedUrl && (
+              <video
+                ref={wipeCompVideoRef}
+                src={compressedUrl}
+                muted
+                loop
+                playsInline
+                onEnded={() => setIsSyncedPlaying(false)}
+                className="absolute inset-0 w-full h-full object-contain"
+              />
+            )}
+
+            {/* Top Clipped Layer: Original Video (Left Side) */}
+            {originalUrl && (
+              <video
+                ref={wipeOrigVideoRef}
+                src={originalUrl}
+                muted
+                loop
+                playsInline
+                style={{ clipPath: `inset(0 ${100 - wipePosition}% 0 0)` }}
+                className="absolute inset-0 w-full h-full object-contain"
+              />
+            )}
+
+            {/* Corner Labels */}
+            <div className="pointer-events-none absolute top-3 left-3 px-2.5 py-1 rounded-lg bg-stone-950/85 border border-stone-700 text-[11px] font-mono text-stone-200">
+              Original ({originalMB} MB)
             </div>
-          )}
-          {compressedUrl && normalizedExt !== '.gif' && normalizedExt !== '.mp3' && (
-            <video
-              src={compressedUrl}
-              controls
-              muted
-              playsInline
-              className="w-full aspect-video object-contain"
+            <div className="pointer-events-none absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-emerald-950/90 border border-emerald-500/40 text-[11px] font-mono text-emerald-300">
+              Compressed ({compressedMB} MB • -{savedPct}%)
+            </div>
+
+            {/* Vertical Wipe Divider Line & Handle */}
+            <div
+              aria-hidden="true"
+              style={{ left: `${wipePosition}%` }}
+              className="pointer-events-none absolute top-0 bottom-0 w-0.5 bg-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.9)]"
+            >
+              <div className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-amber-400 text-stone-950 font-extrabold text-xs flex items-center justify-center shadow-lg border-2 border-stone-950">
+                &harr;
+              </div>
+            </div>
+
+            {/* Transparent Full-Area Range Input for Smooth Dragging */}
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={0.5}
+              value={wipePosition}
+              aria-label="Split screen video quality comparison wipe slider"
+              onChange={(e) => setWipePosition(parseFloat(e.target.value))}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-ew-resize z-10"
             />
-          )}
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 px-1">
+            <button
+              type="button"
+              onClick={toggleSyncedPlayback}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-200 text-xs font-semibold transition"
+            >
+              {isSyncedPlaying ? (
+                <>
+                  <Pause className="w-3.5 h-3.5" />
+                  <span>Pause Synced Preview</span>
+                </>
+              ) : (
+                <>
+                  <Play className="w-3.5 h-3.5" />
+                  <span>Play Synced Before/After Loop</span>
+                </>
+              )}
+            </button>
+            <span className="text-xs font-mono text-stone-400">
+              Drag slider across video to inspect pixel fidelity ({Math.round(wipePosition)}% /{' '}
+              {Math.round(100 - wipePosition)}%)
+            </span>
+          </div>
         </div>
-      </div>
+      ) : (
+        /* Side-by-Side Video / GIF / MP3 Players */
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="rounded-2xl overflow-hidden bg-black border border-stone-800">
+            <div className="px-3.5 py-2.5 bg-stone-900/90 border-b border-stone-800 flex items-center justify-between text-xs font-mono">
+              <span className="text-stone-300 font-semibold">Original Video</span>
+              <span className="text-stone-400">{originalMB} MB</span>
+            </div>
+            {originalUrl && (
+              <video
+                src={originalUrl}
+                controls
+                muted
+                playsInline
+                className="w-full aspect-video object-contain"
+              />
+            )}
+          </div>
+          <div className="rounded-2xl overflow-hidden bg-black border border-emerald-500/30 flex flex-col">
+            <div className="px-3.5 py-2.5 bg-emerald-950/30 border-b border-emerald-500/20 flex items-center justify-between text-xs font-mono">
+              <span className="text-emerald-300 font-semibold">
+                {normalizedExt === '.gif'
+                  ? 'Generated Animated GIF'
+                  : normalizedExt === '.mp3'
+                  ? 'Extracted MP3 Audio'
+                  : 'Compressed Video'}
+              </span>
+              <span className="text-emerald-400">{compressedMB} MB</span>
+            </div>
+            {compressedUrl && normalizedExt === '.gif' && (
+              <img
+                src={compressedUrl}
+                alt="Compressed animated GIF preview"
+                className="w-full aspect-video object-contain"
+              />
+            )}
+            {compressedUrl && normalizedExt === '.mp3' && (
+              <div className="w-full aspect-video flex flex-col items-center justify-center p-6 gap-4 bg-[#0c0a09]">
+                <span className="text-xs font-mono text-amber-300">
+                  192 kbps Stereo MP3 Audio Stream Ready
+                </span>
+                <audio src={compressedUrl} controls className="w-full max-w-sm" />
+              </div>
+            )}
+            {compressedUrl && normalizedExt !== '.gif' && normalizedExt !== '.mp3' && (
+              <video
+                src={compressedUrl}
+                controls
+                muted
+                playsInline
+                className="w-full aspect-video object-contain"
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Primary Download, Batch ZIP Download & Reset Action Buttons */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">

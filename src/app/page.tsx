@@ -30,6 +30,7 @@ import { WasmErrorBoundary } from '@/components/WasmErrorBoundary';
 export interface CompressorStudioProps {
   initialPreset?: PresetId;
   initialFormat?: OutputFormatOption;
+  initialMuteAudio?: boolean;
   heroTitlePrefix?: string;
   heroTitleHighlight?: string;
   heroDescription?: string;
@@ -38,6 +39,7 @@ export interface CompressorStudioProps {
 export function CompressorStudio({
   initialPreset = 'discord',
   initialFormat = 'mp4-h264',
+  initialMuteAudio = false,
   heroTitlePrefix = 'Smaller Videos,',
   heroTitleHighlight = 'GIFs & Audio',
   heroDescription = "Fit Discord's 10MB cap, WhatsApp, or Slack with precision bitrate targeting, instant dead-air trimming, and 1-click GIF or MP3 extraction — 100% locally.",
@@ -70,7 +72,7 @@ export function CompressorStudio({
   const [resolution, setResolution] = useState<ResolutionOption>('original');
   const [fps, setFps] = useState<FramerateOption>('original');
   const [formatCodec, setFormatCodec] = useState<OutputFormatOption>(initialFormat);
-  const [muteAudio, setMuteAudio] = useState<boolean>(false);
+  const [muteAudio, setMuteAudio] = useState<boolean>(initialMuteAudio);
   const [multiThreading, setMultiThreading] = useState<boolean>(true);
   const [outboundPostPutCount, setOutboundPostPutCount] = useState<number>(0);
 

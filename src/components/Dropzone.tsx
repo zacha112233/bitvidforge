@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   UploadCloud,
   FileVideo,
@@ -16,6 +16,7 @@ import {
   Eye,
   Clock,
   Ban,
+  ClipboardPaste,
 } from 'lucide-react';
 
 export type QueueItemStatus = 'pending' | 'processing' | 'completed' | 'cancelled' | 'error';
@@ -70,39 +71,58 @@ export default function Dropzone({
   const [isLoadingDemo, setIsLoadingDemo] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const validateAndAddFiles = (fileList: File[] | FileList) => {
-    setValidationError(null);
-    const validFiles: File[] = [];
-    const errors: string[] = [];
+  const validateAndAddFiles = useCallback(
+    (fileList: File[] | FileList) => {
+      setValidationError(null);
+      const validFiles: File[] = [];
+      const errors: string[] = [];
 
-    Array.from(fileList).forEach((file) => {
-      const lowerName = file.name.toLowerCase();
-      const hasValidExtension = ACCEPTED_EXTENSIONS.some((ext) => lowerName.endsWith(ext));
-      const hasValidMime = ACCEPTED_MIME_TYPES.includes(file.type);
+      Array.from(fileList).forEach((file) => {
+        const lowerName = file.name.toLowerCase();
+        const hasValidExtension = ACCEPTED_EXTENSIONS.some((ext) => lowerName.endsWith(ext));
+        const hasValidMime = ACCEPTED_MIME_TYPES.includes(file.type);
 
-      if (!hasValidExtension && !hasValidMime) {
-        errors.push(`"${file.name}": Unsupported format (use MP4, MOV, or WebM).`);
-        return;
+        if (!hasValidExtension && !hasValidMime) {
+          errors.push(`"${file.name}": Unsupported format (use MP4, MOV, or WebM).`);
+          return;
+        }
+
+        if (file.size > MAX_FILE_SIZE_BYTES) {
+          errors.push(
+            `"${file.name}": Exceeds the 500MB browser limit (${formatBytesToMB(file.size)} MB).`
+          );
+          return;
+        }
+
+        validFiles.push(file);
+      });
+
+      if (errors.length > 0) {
+        setValidationError(errors.join(' '));
       }
 
-      if (file.size > MAX_FILE_SIZE_BYTES) {
-        errors.push(
-          `"${file.name}": Exceeds the 500MB browser limit (${formatBytesToMB(file.size)} MB).`
-        );
-        return;
+      if (validFiles.length > 0) {
+        onFilesAdded(validFiles);
       }
+    },
+    [onFilesAdded]
+  );
 
-      validFiles.push(file);
-    });
+  // Support Ctrl+V / Cmd+V clipboard video paste anywhere on the page
+  useEffect(() => {
+    if (typeof window === 'undefined' || disabled) return;
 
-    if (errors.length > 0) {
-      setValidationError(errors.join(' '));
-    }
+    const handleWindowPaste = (e: ClipboardEvent) => {
+      const files = e.clipboardData?.files;
+      if (files && files.length > 0) {
+        e.preventDefault();
+        validateAndAddFiles(files);
+      }
+    };
 
-    if (validFiles.length > 0) {
-      onFilesAdded(validFiles);
-    }
-  };
+    window.addEventListener('paste', handleWindowPaste);
+    return () => window.removeEventListener('paste', handleWindowPaste);
+  }, [disabled, validateAndAddFiles]);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -241,6 +261,11 @@ export default function Dropzone({
                 </>
               )}
             </button>
+
+            <span className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-stone-900/90 border border-stone-800 text-stone-400 text-xs font-mono">
+              <ClipboardPaste className="w-3.5 h-3.5 text-amber-400" />
+              <span>or press Ctrl+V to paste video</span>
+            </span>
           </div>
         </div>
       ) : (
