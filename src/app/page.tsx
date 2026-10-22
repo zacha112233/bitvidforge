@@ -24,6 +24,7 @@ import PresetSelector, { PresetId } from '@/components/PresetSelector';
 import ProcessingStatus from '@/components/ProcessingStatus';
 import ComparisonSlider from '@/components/ComparisonSlider';
 import AdSlot from '@/components/AdSlot';
+import SeoKnowledgeSection from '@/components/SeoKnowledgeSection';
 import { WasmErrorBoundary } from '@/components/WasmErrorBoundary';
 
 export default function HomePage() {
@@ -500,6 +501,9 @@ export default function HomePage() {
           <section className="pt-2 flex justify-center">
             <AdSlot size="728x90" />
           </section>
+
+          {/* SEO & AI Knowledge Section: 2026 Platform Upload Limits Table, Bitrate Guide & FAQ */}
+          <SeoKnowledgeSection />
         </main>
 
         {/* Processing Modal & Dwell-Time Ad Slots */}
