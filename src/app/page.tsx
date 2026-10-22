@@ -69,11 +69,20 @@ export default function HomePage() {
     const originalXhrOpen = XMLHttpRequest.prototype.open;
 
     window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+      const urlStr =
+        typeof input === 'string'
+          ? input
+          : input instanceof URL
+          ? input.toString()
+          : input.url || '';
       const method = (
         init?.method ||
         (input instanceof Request ? input.method : 'GET')
       ).toUpperCase();
-      if (method === 'POST' || method === 'PUT') {
+      if (
+        (method === 'POST' || method === 'PUT') &&
+        !urlStr.includes('/_vercel/insights')
+      ) {
         setOutboundPostPutCount((c) => c + 1);
       }
       return originalFetch(input, init);
