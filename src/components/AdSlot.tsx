@@ -9,11 +9,32 @@ interface AdSlotProps {
   className?: string;
 }
 
+function parseAadsUnit(rawValue: string, size: '728x90' | '300x250'): {
+  unitId: string;
+  iframeSrc: string;
+} {
+  const trimmed = rawValue.trim();
+  if (!trimmed) {
+    return { unitId: '', iframeSrc: '' };
+  }
+  // Extract numeric unit ID if a full URL or snippet was provided
+  const idMatch = trimmed.match(/(\d{5,12})/);
+  const unitId = idMatch ? idMatch[1] : trimmed;
+  const host = trimmed.includes('acceptable.a-ads.com')
+    ? 'acceptable.a-ads.com'
+    : 'ad.a-ads.com';
+  return {
+    unitId,
+    iframeSrc: `https://${host}/${encodeURIComponent(unitId)}?size=${size}`,
+  };
+}
+
 export default function AdSlot({ size, className = '' }: AdSlotProps) {
-  const unitId =
+  const rawConfigValue =
     size === '728x90'
-      ? AD_CONFIG.aadsUnit728x90.trim()
-      : AD_CONFIG.aadsUnit300x250.trim();
+      ? AD_CONFIG.aadsUnit728x90
+      : AD_CONFIG.aadsUnit300x250;
+  const { unitId, iframeSrc } = parseAadsUnit(rawConfigValue, size);
 
   if (size === '728x90') {
     return (
@@ -29,7 +50,7 @@ export default function AdSlot({ size, className = '' }: AdSlotProps) {
             </div>
             <iframe
               data-aa={unitId}
-              src={`https://ad.a-ads.com/${encodeURIComponent(unitId)}?size=728x90`}
+              src={iframeSrc}
               title="Sponsor Leaderboard 728x90"
               style={{
                 width: '728px',
@@ -95,7 +116,7 @@ export default function AdSlot({ size, className = '' }: AdSlotProps) {
         <div className="my-auto flex items-center justify-center w-[300px] h-[250px]">
           <iframe
             data-aa={unitId}
-            src={`https://ad.a-ads.com/${encodeURIComponent(unitId)}?size=300x250`}
+            src={iframeSrc}
             title="Sponsor Medium Rectangle 300x250"
             style={{
               width: '300px',

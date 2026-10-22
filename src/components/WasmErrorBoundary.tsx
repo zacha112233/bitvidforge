@@ -180,7 +180,7 @@ export class WasmErrorBoundary extends Component<Props, State> {
     }
 
     const showEnvironmentNotice =
-      capabilitiesChecked && (!hasSharedArrayBuffer || !hasSimd || !crossOriginIsolated) && !dismissedWarning;
+      capabilitiesChecked && !hasSimd && !dismissedWarning;
 
     return (
       <>

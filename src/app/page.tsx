@@ -531,11 +531,11 @@ export default function HomePage() {
                 Tailwind CSS &amp; @ffmpeg/ffmpeg (v0.12 WebAssembly)
               </span>
               <span className="font-mono text-[11px] text-stone-400">
-                COOP: same-origin • COEP: credentialless • WASM Engine:{' '}
+                Zero-Upload MEMFS • WASM SIMD Engine:{' '}
                 {isLoaded
                   ? isMultiThreaded
                     ? 'Loaded (MT Pthreads)'
-                    : 'Loaded (ST)'
+                    : 'Loaded (Active)'
                   : 'Standby'}
               </span>
             </div>
